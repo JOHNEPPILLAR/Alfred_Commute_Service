@@ -116,7 +116,7 @@ async function checkDistruptions() {
   }
 
   if (commuteDistruption) {
-    serviceHelper.log('trace', 'There are commute distruptions');
+    serviceHelper.log('info', 'There are commute distruptions');
     if (!global.commuteDistruptions) {
       serviceHelper.log(
         'trace',
@@ -130,7 +130,7 @@ async function checkDistruptions() {
     }
     global.commuteDistruptions = true;
   } else {
-    serviceHelper.log('trace', 'There are no commute distruptions');
+    serviceHelper.log('info', 'There are no commute distruptions');
     if (global.commuteDistruptions) {
       serviceHelper.log(
         'trace',
