@@ -1,0 +1,21 @@
+version: '3.5'
+
+services:
+  alfred_commute_service:
+    build:
+      context: ./
+      dockerfile: Dockerfile.dev
+    image: alfred_commute_service:latest
+    container_name: alfred_commute_service
+    restart: always
+    hostname: alfred_commute_service
+    networks:
+      - alfred
+    ports:
+      - '3983:3978'
+    command: npm run test
+
+networks:
+  alfred:
+    name: alfred
+    driver: bridge
