@@ -228,7 +228,7 @@ exports.setup = async () => {
     rule.hour = results.rows[0].hour || '07';
     rule.minute = results.rows[0].minute || '10';
 
-    // Set the timer
+    // Set the schedule
     schedule = scheduler.scheduleJob(rule, () => checkForBankHolidayWeekend());
     global.schedules.push(schedule);
     serviceHelper.log(

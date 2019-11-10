@@ -167,19 +167,18 @@ global.deviceDataClient.on('error', (err) => {
   cleanExit();
 });
 
-// Setup monitors and schedules
+// Setup schedules
 async function setupSchedules() {
   if (process.env.Mock === 'true') {
     serviceHelper.log('info', 'Mocking enabled, will not setup schedules');
   } else {
-    schedules.setSchedule(true); // Setup light schedules
+    schedules.setSchedule(true); // Setup schedules
   }
 }
 
 setTimeout(() => {
   setupSchedules();
 }, 1000);
-
 
 // Start service and listen to requests
 server.listen(process.env.Port, () => {
