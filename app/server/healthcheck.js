@@ -2,6 +2,7 @@
  * Import external libraries
  */
 require('dotenv').config();
+const serviceHelper = require('alfred-helper');
 const rp = require('request-promise');
 const logger = require('pino')();
 
@@ -13,13 +14,12 @@ const options = {
   agentOptions: {
     rejectUnauthorized: false,
   },
-  headers: {
-    'Client-Access-Key': process.env.ClientAccessKey,
-  },
 };
 
 async function pingApp() {
   try {
+    const ClientAccessKey = await serviceHelper.vaultSecret(process.env.Environment, 'ClientAccessKey');
+    options.headers = { 'Client-Access-Key': ClientAccessKey };
     await rp(options);
     process.exit(0);
   } catch (err) {

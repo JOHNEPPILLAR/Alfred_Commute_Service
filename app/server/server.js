@@ -115,7 +115,7 @@ async function GetAPIClientAccessKey() {
 // Start service and listen to requests
 server.listen(process.env.Port, () => {
   GetAPIClientAccessKey();
-  serviceHelper.log('info',`${process.env.ServiceName} has started`);
+  serviceHelper.log('info', `${process.env.ServiceName} has started`);
   if (process.env.Mock === 'true') {
     serviceHelper.log('info', 'Mocking enabled, will not setup schedules');
   } else {
