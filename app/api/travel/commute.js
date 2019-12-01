@@ -455,7 +455,6 @@ async function getCommute(req, res, next) {
 }
 skill.get('/commute/:lat/:long', getCommute);
 
-
 module.exports = {
   skill,
   getCommuteStatus,

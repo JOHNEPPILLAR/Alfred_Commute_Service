@@ -13,4 +13,4 @@ npm audit
 snyk test
 
 echo "Run the server"
-npm run test
+npm run local

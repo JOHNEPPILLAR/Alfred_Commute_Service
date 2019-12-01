@@ -2,9 +2,9 @@
  * Import external libraries
  */
 const scheduler = require('node-schedule');
-const apn = require('apn');
 const dateFormat = require('dateformat');
 const serviceHelper = require('alfred-helper');
+const apn = require('apn');
 
 /**
  * Import helper libraries
@@ -48,14 +48,16 @@ async function getDevicesToNotify(messageToSend) {
   const SQL = 'SELECT last(device_token, time) as device_token, app_user FROM ios_devices WHERE app_user is not null GROUP BY app_user';
   try {
     serviceHelper.log('trace', 'Connect to data store connection pool');
-    dbClient = await global.deviceDataClient.connect(); // Connect to data store
+    const dbConnection = await serviceHelper.connectToDB('devices');
+    dbClient = await dbConnection.connect(); // Connect to data store
     serviceHelper.log('trace', 'Getting IOS devices');
     results = await dbClient.query(SQL);
     serviceHelper.log(
       'trace',
-      'Release the data store connection back to the pool',
+      'Release the data store and close the connection',
     );
     await dbClient.release(); // Return data store connection back to pool
+    await dbClient.end(); // Close data store connection
 
     if (results.rowCount === 0) {
       serviceHelper.log(
@@ -67,14 +69,7 @@ async function getDevicesToNotify(messageToSend) {
 
     // Connect to apples push notification service
     serviceHelper.log('trace', 'Connect to Apple push notification service');
-    const apnProvider = new apn.Provider({
-      token: {
-        key: 'certs/Push.p8',
-        keyId: process.env.keyID,
-        teamId: process.env.teamID,
-      },
-      production: true,
-    });
+    const apnProvider = await serviceHelper.connectToAPN();
 
     // Send notifications
     await Promise.all(
@@ -158,7 +153,7 @@ async function checkForBankHolidayWeekend() {
     return;
   }
 
-  const returnData = await serviceHelper.callAPIServiceGet(url);
+  const returnData = await serviceHelper.callAPIService(url);
   if (returnData instanceof Error) {
     serviceHelper.log('trace', returnData.message);
     return;
@@ -210,14 +205,17 @@ exports.setup = async () => {
   try {
     const SQL = 'SELECT hour, minute FROM schedules WHERE active';
     serviceHelper.log('trace', 'Connect to data store connection pool');
-    dbClient = await global.commuteDataClient.connect(); // Connect to data store
+
+    const dbConnection = await serviceHelper.connectToDB('commute');
+    dbClient = await dbConnection.connect(); // Connect to data store
     serviceHelper.log('trace', 'Get commute schedule settings');
     results = await dbClient.query(SQL);
     serviceHelper.log(
       'trace',
-      'Release the data store connection back to the pool',
+      'Release the data store and close the connection',
     );
     await dbClient.release(); // Return data store connection back to pool
+    await dbClient.end(); // Close data store connection
 
     if (results.rowCount === 0) {
       serviceHelper.log('trace', 'No commute schedules are active');

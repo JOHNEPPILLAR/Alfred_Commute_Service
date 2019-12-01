@@ -7,7 +7,6 @@ const serviceHelper = require('alfred-helper');
 const restify = require('restify');
 const fs = require('fs');
 const UUID = require('pure-uuid');
-const { Pool } = require('pg');
 const { version } = require('../../package.json');
 
 /**
@@ -15,28 +14,11 @@ const { version } = require('../../package.json');
  */
 const schedules = require('../schedules/controller.js');
 
-global.commuteDataClient = new Pool({
-  host: process.env.DataStore,
-  database: 'commute',
-  user: process.env.DataStoreUser,
-  password: process.env.DataStoreUserPassword,
-  port: 5432,
-});
-
-global.deviceDataClient = new Pool({
-  host: process.env.DataStore,
-  database: 'devices',
-  user: process.env.DataStoreUser,
-  password: process.env.DataStoreUserPassword,
-  port: 5432,
-});
-
 global.APITraceID = '';
 global.schedules = [];
+let ClientAccessKey;
 
-/**
- * Restify server Init
- */
+// Restify server Init
 const server = restify.createServer({
   name: process.env.ServiceName,
   version,
@@ -44,9 +26,7 @@ const server = restify.createServer({
   certificate: fs.readFileSync('./certs/server.crt'),
 });
 
-/**
- * Setup API middleware
- */
+// Setup API middleware
 server.use(restify.plugins.jsonBodyParser({ mapParams: true }));
 server.use(restify.plugins.acceptParser(server.acceptable));
 server.use(restify.plugins.queryParser({ mapParams: true }));
@@ -76,7 +56,7 @@ server.use((req, res, next) => {
   }
 
   // Check for valid auth key
-  if (req.headers['client-access-key'] !== process.env.ClientAccessKey) {
+  if (req.headers['client-access-key'] !== ClientAccessKey) {
     serviceHelper.log(
       'warn',
       `Invaid client access key: ${req.headers.ClientAccessKey}`,
@@ -100,35 +80,17 @@ server.on('uncaughtException', (req, res, route, err) => {
   serviceHelper.sendResponse(res, 500, err);
 });
 
-/**
- * Configure API end points
- */
+// Configure API end points
 require('../api/root/root.js').applyRoutes(server);
 require('../api/travel/travel.js').skill.applyRoutes(server);
 require('../api/travel/commute.js').skill.applyRoutes(server);
 
-/**
- * Stop server if process close event is issued
- */
+// Stop server if process close event is issued
 async function cleanExit() {
   serviceHelper.log('warn', 'Service stopping');
-  serviceHelper.log('warn', 'Closing the data store pools');
-  try {
-    global.commuteDataClient
-      .end()
-      .then(() => serviceHelper.log('trace', 'client has disconnected'))
-      .catch((err) => serviceHelper.log('error', err.stack));
-    global.deviceDataClient
-      .end()
-      .then(() => serviceHelper.log('trace', 'client has disconnected'))
-      .catch((err) => serviceHelper.log('error', err.stack));
-  } catch (err) {
-    serviceHelper.log('error', err.message);
-  }
-  serviceHelper.log('warn', 'Close rest server');
+  serviceHelper.log('trace', 'Close rest server');
   server.close(() => {
-    // Ensure rest server is stopped
-    serviceHelper.log('warn', 'Exit the app');
+    serviceHelper.log('info', 'Exit the app');
     process.exit(); // Exit app
   });
 }
@@ -146,44 +108,17 @@ process.on('uncaughtException', (err) => {
   cleanExit();
 });
 
-/**
- * Data store error events
- */
-global.commuteDataClient.on('error', (err) => {
-  serviceHelper.log(
-    'error',
-    'Commute data store: Unexpected error on idle client',
-  );
-  serviceHelper.log('error', err.message);
-  cleanExit();
-});
+async function GetAPIClientAccessKey() {
+  ClientAccessKey = await serviceHelper.vaultSecret(process.env.Environment, 'ClientAccessKey');
+}
 
-global.deviceDataClient.on('error', (err) => {
-  serviceHelper.log(
-    'error',
-    'Device data store: Unexpected error on idle client',
-  );
-  serviceHelper.log('error', err.message);
-  cleanExit();
-});
-
-// Setup schedules
-async function setupSchedules() {
+// Start service and listen to requests
+server.listen(process.env.Port, () => {
+  GetAPIClientAccessKey();
+  serviceHelper.log('info',`${process.env.ServiceName} has started`);
   if (process.env.Mock === 'true') {
     serviceHelper.log('info', 'Mocking enabled, will not setup schedules');
   } else {
     schedules.setSchedule(true); // Setup schedules
   }
-}
-
-setTimeout(() => {
-  setupSchedules();
-}, 1000);
-
-// Start service and listen to requests
-server.listen(process.env.Port, () => {
-  serviceHelper.log(
-    'info',
-    `${process.env.ServiceName} has started and is listening on port ${process.env.Port}`,
-  );
 });
