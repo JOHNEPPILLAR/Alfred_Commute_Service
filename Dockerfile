@@ -3,6 +3,7 @@ FROM node:13-alpine
 RUN ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime && echo Europe/London > /etc/timezone \
 	&& mkdir -p /home/nodejs/app \
 	&& apk --no-cache --virtual build-dependencies add \
+	openssl \
 	git \ 
 	g++ \
 	gcc \
@@ -16,13 +17,19 @@ RUN ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime && echo Europe/Lond
 
 WORKDIR /home/nodejs/app
 
-COPY . /home/nodejs/app
+COPY package*.json ./
 
-RUN mv certs/alfred_commute_service.key certs/server.key \
-	&& mv certs/alfred_commute_service.crt certs/server.crt 
+RUN npm install
 
-RUN npm update \
-	&& npm install --production
+COPY --chown=node:node . .
+
+RUN openssl genrsa -des3 -passout pass:qwerty -out /home/nodejs/app/certs/server.pass.key 2048 && \
+    openssl rsa -passin pass:qwerty -in /home/nodejs/app/certs/server.pass.key -out /home/nodejs/app/certs/server.key && \
+    rm /home/nodejs/app/certs/server.pass.key && \
+    openssl req -new -key /home/nodejs/app/certs/server.key -out /home/nodejs/app/certs/server.csr -subj "/C=UK/ST=London/L=London/O=Alfred/OU=Alfred/CN=alfred_commute_service" && \
+    openssl x509 -req -days 90 -in /home/nodejs/app/certs/server.csr -signkey /home/nodejs/app/certs/server.key -out /home/nodejs/app/certs/server.crt
+
+USER node
 
 HEALTHCHECK --start-period=60s --interval=10s --timeout=10s --retries=6 CMD ["./healthcheck.sh"]
 
