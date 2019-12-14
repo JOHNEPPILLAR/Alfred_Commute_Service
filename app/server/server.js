@@ -27,6 +27,10 @@ const server = restify.createServer({
 });
 
 // Setup API middleware
+server.on('NotFound', (req, res, err) => {
+  serviceHelper.log('error', `${err.message}`);
+  serviceHelper.sendResponse(res, 404, err.message);
+});
 server.use(restify.plugins.jsonBodyParser({ mapParams: true }));
 server.use(restify.plugins.acceptParser(server.acceptable));
 server.use(restify.plugins.queryParser({ mapParams: true }));
@@ -47,7 +51,7 @@ server.use((req, res, next) => {
   res.setHeader('Referrer-Policy', 'no-referrer');
   next();
 });
-server.use((req, res, next) => {
+server.use(async (req, res, next) => {
   // Check for a trace id
   if (typeof req.headers['api-trace-id'] === 'undefined') {
     global.APITraceID = new UUID(4);
@@ -56,6 +60,16 @@ server.use((req, res, next) => {
   }
 
   // Check for valid auth key
+  ClientAccessKey = await serviceHelper.vaultSecret(process.env.Environment, 'ClientAccessKey');
+  if (ClientAccessKey instanceof Error) {
+    serviceHelper.log('error', 'Vault service not running');
+    serviceHelper.sendResponse(
+      res,
+      500,
+      new Error('There was a problem with the auth service'),
+    );
+    return;
+  }
   if (req.headers['client-access-key'] !== ClientAccessKey) {
     serviceHelper.log(
       'warn',
@@ -64,20 +78,11 @@ server.use((req, res, next) => {
     serviceHelper.sendResponse(
       res,
       401,
-      'There was a problem authenticating you.',
+      'There was a problem authenticating you',
     );
     return;
   }
   next();
-});
-
-server.on('NotFound', (req, res, err) => {
-  serviceHelper.log('error', `${err.message}`);
-  serviceHelper.sendResponse(res, 404, err.message);
-});
-server.on('uncaughtException', (req, res, route, err) => {
-  serviceHelper.log('error', `${route}: ${err.message}`);
-  serviceHelper.sendResponse(res, 500, err);
 });
 
 // Configure API end points
@@ -86,12 +91,12 @@ require('../api/travel/travel.js').skill.applyRoutes(server);
 require('../api/travel/commute.js').skill.applyRoutes(server);
 
 // Stop server if process close event is issued
-async function cleanExit() {
+function cleanExit() {
   serviceHelper.log('warn', 'Service stopping');
   serviceHelper.log('trace', 'Close rest server');
   server.close(() => {
     serviceHelper.log('info', 'Exit the app');
-    process.exit(); // Exit app
+    process.exit(1); // Exit app
   });
 }
 process.on('SIGINT', () => {
@@ -104,17 +109,14 @@ process.on('SIGUSR2', () => {
   cleanExit();
 });
 process.on('uncaughtException', (err) => {
-  if (err) serviceHelper.log('error', err.message); // log the error
-  cleanExit();
+  serviceHelper.log('error', err.message); // log the error
 });
-
-async function GetAPIClientAccessKey() {
-  ClientAccessKey = await serviceHelper.vaultSecret(process.env.Environment, 'ClientAccessKey');
-}
+process.on('unhandledRejection', (reason, p) => {
+  serviceHelper.log('error', `Unhandled Rejection at Promise: ${p} - ${reason}`); // log the error
+});
 
 // Start service and listen to requests
 server.listen(process.env.Port, () => {
-  GetAPIClientAccessKey();
   serviceHelper.log('info', `${process.env.ServiceName} has started`);
   if (process.env.Mock === 'true') {
     serviceHelper.log('info', 'Mocking enabled, will not setup schedules');

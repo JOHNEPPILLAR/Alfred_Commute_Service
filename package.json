@@ -9,19 +9,18 @@
   "scripts": {
     "prod": "node app/server/server.js",
     "local": "nodemon app/server/server.js",
-    "test": "snyk test",
     "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect"
   },
   "dependencies": {
     "alfred-helper": "git://github.com/johneppillar/alfred_helper_lib",
     "dotenv": "^8.2.0",
-    "pino": "^5.14.0",
-    "pino-pretty": "^3.4.0",
+    "pino": "^5.15.0",
+    "pino-pretty": "^3.5.0",
     "pure-uuid": "^1.5.7",
     "request": "^2.88.0",
     "request-promise": "^4.2.5",
-    "restify": "^8.4.1",
+    "restify": "^8.5.1",
     "restify-router": "^0.5.1",
     "node-schedule": "^1.3.2",
     "dateformat": "^3.0.3",
@@ -30,7 +29,7 @@
   "devDependencies": {
     "eslint": "^6.7.2",
     "eslint-config-airbnb-base": "^14.0.0",
-    "eslint-plugin-import": "^2.18.2",
-    "snyk": "^1.253.0"
+    "eslint-plugin-import": "^2.19.1",
+    "snyk": "^1.260.0"
   }
 }
