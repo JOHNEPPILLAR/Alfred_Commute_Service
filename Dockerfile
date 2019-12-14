@@ -23,11 +23,11 @@ RUN npm install
 
 COPY --chown=node:node . .
 
-RUN openssl genrsa -des3 -passout pass:qwerty -out /home/nodejs/app/certs/server.pass.key 2048
-RUN openssl rsa -passin pass:qwerty -in /home/nodejs/app/certs/server.pass.key -out /home/nodejs/app/certs/server.key
-RUN rm /home/nodejs/app/certs/server.pass.key
-RUN openssl req -new -key /home/nodejs/app/certs/server.key -out /home/nodejs/app/certs/server.csr -subj "/C=UK/ST=London/L=London/O=Alfred/OU=Alfred/CN=alfred_commute_service" 
-RUN openssl x509 -req -days 90 -in /home/nodejs/app/certs/server.csr -signkey /home/nodejs/app/certs/server.key -out /home/nodejs/app/certs/server.crt
+RUN openssl genrsa -des3 -passout pass:qwerty -out certs/server.pass.key 2048
+RUN openssl rsa -passin pass:qwerty -in certs/server.pass.key -out certs/server.key
+RUN rm certs/server.pass.key
+RUN openssl req -new -key certs/server.key -out certs/server.csr -subj "/C=UK/ST=London/L=London/O=Alfred/OU=Alfred/CN=alfred_commute_service" 
+RUN openssl x509 -req -days 90 -in certs/server.csr -signkey certs/server.key -out certs/server.crt
 
 USER node
 
