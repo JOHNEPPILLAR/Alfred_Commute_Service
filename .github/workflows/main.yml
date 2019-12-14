@@ -1,0 +1,26 @@
+name: CI
+
+on: [push]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Run Snyk to check for vulnerabilities
+      uses: snyk/actions/node@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_test }}
+ 
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: NPM Install
+      uses: actions/setup-node@v1
+      with:
+        node-version: '13.x'
+    - name: npm install, build, and test
+      run: npm ci
+      env:
+        CI: true
