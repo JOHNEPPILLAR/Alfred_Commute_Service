@@ -205,7 +205,6 @@ exports.setup = async () => {
   try {
     const SQL = 'SELECT hour, minute FROM schedules WHERE active';
     serviceHelper.log('trace', 'Connect to data store connection pool');
-
     const dbConnection = await serviceHelper.connectToDB('commute');
     dbClient = await dbConnection.connect(); // Connect to data store
     serviceHelper.log('trace', 'Get commute schedule settings');

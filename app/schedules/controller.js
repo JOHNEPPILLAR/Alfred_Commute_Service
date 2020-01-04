@@ -1,7 +1,6 @@
 /**
  * Import external libraries
  */
-const scheduler = require('node-schedule');
 const serviceHelper = require('alfred-helper');
 
 /**
@@ -18,9 +17,7 @@ exports.setSchedule = () => {
     'trace',
     'Removing any existing schedules',
   );
-  global.schedules.forEach((value) => {
-    value.cancel();
-  });
+  global.schedules.map((value) => value.cancel());
 
   commute.setup(); // commute schedules
 };

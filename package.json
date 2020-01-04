@@ -1,13 +1,13 @@
 {
   "name": "alfred_commute_service",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Alfred Commute Service",
   "author": "JP",
   "license": "MIT",
   "snyk": true,
   "main": "app/server/server.js",
   "scripts": {
-    "prod": "node app/server/server.js",
+    "start": "node app/server/server.js",
     "local": "nodemon app/server/server.js",
     "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect"
@@ -17,7 +17,7 @@
     "dotenv": "^8.2.0",
     "pino": "^5.15.0",
     "pino-pretty": "^3.5.0",
-    "pure-uuid": "^1.5.7",
+    "pure-uuid": "^1.5.8",
     "request": "^2.88.0",
     "request-promise": "^4.2.5",
     "restify": "^8.5.1",
@@ -27,9 +27,9 @@
     "apn": "^2.2.0"
   },
   "devDependencies": {
-    "eslint": "^6.7.2",
+    "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.19.1",
-    "snyk": "^1.260.0"
+    "snyk": "^1.272.0"
   }
 }

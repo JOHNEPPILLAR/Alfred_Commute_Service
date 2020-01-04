@@ -168,7 +168,6 @@ async function getCommute(req, res, next) {
 
   if (atHome) {
     serviceHelper.log('trace', 'Current location is close to home');
-
     serviceHelper.log('trace', 'Checking train and tube status');
     const trainData = await travelHelper.nextTrain(
       { params: { startID: 'CTN', endID: 'LBG', disruptionsOnly: 'true' } },
