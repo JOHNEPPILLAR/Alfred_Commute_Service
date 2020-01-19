@@ -56,7 +56,6 @@ async function getDevicesToNotify(messageToSend) {
       'trace',
       'Release the data store and close the connection',
     );
-    await dbClient.release(); // Return data store connection back to pool
     await dbClient.end(); // Close data store connection
 
     if (results.rowCount === 0) {
@@ -213,7 +212,6 @@ exports.setup = async () => {
       'trace',
       'Release the data store and close the connection',
     );
-    await dbClient.release(); // Return data store connection back to pool
     await dbClient.end(); // Close data store connection
 
     if (results.rowCount === 0) {
