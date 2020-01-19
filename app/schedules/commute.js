@@ -42,21 +42,19 @@ async function sendPushNotification(apnProvider, user, messageToSend) {
  */
 async function getDevicesToNotify(messageToSend) {
   let results;
-  let dbClient;
 
   // Get the list of devices to push notifiactions to
   const SQL = 'SELECT last(device_token, time) as device_token, app_user FROM ios_devices WHERE app_user is not null GROUP BY app_user';
   try {
     serviceHelper.log('trace', 'Connect to data store connection pool');
     const dbConnection = await serviceHelper.connectToDB('devices');
-    dbClient = await dbConnection.connect(); // Connect to data store
     serviceHelper.log('trace', 'Getting IOS devices');
-    results = await dbClient.query(SQL);
+    results = await dbConnection.query(SQL);
     serviceHelper.log(
       'trace',
       'Release the data store and close the connection',
     );
-    await dbClient.end(); // Close data store connection
+    await dbConnection.end(); // Close data store connection
 
     if (results.rowCount === 0) {
       serviceHelper.log(
