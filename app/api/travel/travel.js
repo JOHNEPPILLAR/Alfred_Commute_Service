@@ -34,7 +34,7 @@ async function tubeStatus(req, res, next) {
   serviceHelper.log('trace', 'tubes status API called');
   serviceHelper.log('trace', `Params: ${JSON.stringify(req.params)}`);
 
-  const TFLAPIKey = await serviceHelper.vaultSecret(process.env.Environment, 'TFLAPIKey');
+  const TFLAPIKey = await serviceHelper.vaultSecret(process.env.ENVIRONMENT, 'TFLAPIKey');
 
   let { line } = req.params;
   let disruptions = 'false';
@@ -122,7 +122,7 @@ async function nextTube(req, res, next) {
 
   let { line } = req.params;
   const { startID, endID } = req.params;
-  const TFLAPIKey = await serviceHelper.vaultSecret(process.env.Environment, 'TFLAPIKey');
+  const TFLAPIKey = await serviceHelper.vaultSecret(process.env.ENVIRONMENT, 'TFLAPIKey');
 
   let duration = 0;
   let disruptions = 'false';
@@ -252,7 +252,7 @@ async function busStatus(req, res, next) {
   serviceHelper.log('trace', 'Bus Status API called');
   serviceHelper.log('trace', `Params: ${JSON.stringify(req.params)}`);
 
-  const TFLAPIKey = await serviceHelper.vaultSecret(process.env.Environment, 'TFLAPIKey');
+  const TFLAPIKey = await serviceHelper.vaultSecret(process.env.ENVIRONMENT, 'TFLAPIKey');
 
   let { route } = req.params;
   let disruptions = 'false';
@@ -338,7 +338,7 @@ async function nextbus(req, res, next) {
   serviceHelper.log('trace', `Params: ${JSON.stringify(req.params)}`);
 
   const { route } = req.params;
-  const TFLAPIKey = await serviceHelper.vaultSecret(process.env.Environment, 'TFLAPIKey');
+  const TFLAPIKey = await serviceHelper.vaultSecret(process.env.ENVIRONMENT, 'TFLAPIKey');
 
   let url;
   let returnJSON;
@@ -518,7 +518,7 @@ async function nextTrain(req, res, next) {
   serviceHelper.log('trace', 'Next train API called');
   serviceHelper.log('trace', `Params: ${JSON.stringify(req.params)}`);
 
-  const TransportAPIKey = await serviceHelper.vaultSecret(process.env.Environment, 'TransportAPIKey');
+  const TransportAPIKey = await serviceHelper.vaultSecret(process.env.ENVIRONMENT, 'TransportAPIKey');
   const { nextTrainOnly } = req.params;
 
   let {

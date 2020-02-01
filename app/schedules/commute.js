@@ -193,24 +193,19 @@ async function checkForBankHolidayWeekend() {
  * Set up commute distruptions notifications
  */
 exports.setup = async () => {
-  let schedule;
-  let results;
-  let dbClient;
-
   global.commuteDistruptions = false; // Reset distruptions flag
 
   try {
     const SQL = 'SELECT hour, minute FROM schedules WHERE active';
-    serviceHelper.log('trace', 'Connect to data store connection pool');
+    serviceHelper.log('trace', 'Connect to data store');
     const dbConnection = await serviceHelper.connectToDB('commute');
-    dbClient = await dbConnection.connect(); // Connect to data store
     serviceHelper.log('trace', 'Get commute schedule settings');
-    results = await dbClient.query(SQL);
+    const results = await dbConnection.query(SQL);
     serviceHelper.log(
       'trace',
       'Release the data store and close the connection',
     );
-    await dbClient.end(); // Close data store connection
+    await dbConnection.end(); // Close data store connection
 
     if (results.rowCount === 0) {
       serviceHelper.log('trace', 'No commute schedules are active');
@@ -222,7 +217,7 @@ exports.setup = async () => {
     rule.minute = results.rows[0].minute || '10';
 
     // Set the schedule
-    schedule = scheduler.scheduleJob(rule, () => checkForBankHolidayWeekend());
+    const schedule = scheduler.scheduleJob(rule, () => checkForBankHolidayWeekend());
     global.schedules.push(schedule);
     serviceHelper.log(
       'info',
