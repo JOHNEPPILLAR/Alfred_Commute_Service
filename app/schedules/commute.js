@@ -2,7 +2,7 @@
  * Import external libraries
  */
 const scheduler = require('node-schedule');
-const dateFormat = require('dateformat');
+const dateformat = require('dateformat');
 const serviceHelper = require('alfred-helper');
 const apn = require('apn');
 
@@ -132,6 +132,7 @@ async function checkDistruptions() {
     }
     global.commuteDistruptions = false;
   }
+  return true;
 }
 
 /**
@@ -158,7 +159,7 @@ async function checkForBankHolidayWeekend() {
 /**
  * Set up commute distruptions notifications
  */
-exports.setup = async () => {
+async function setupSchedules() {
   global.commuteDistruptions = false; // Reset distruptions flag
 
   try {
@@ -175,7 +176,8 @@ exports.setup = async () => {
 
     if (results.rowCount === 0) {
       serviceHelper.log('trace', 'No commute schedules are active');
-    } // Exit function as no data to process
+      return;
+    }
 
     serviceHelper.log('trace', 'Create commute check schedule');
     const date = new Date();
@@ -185,9 +187,36 @@ exports.setup = async () => {
     global.schedules.push(schedule);
     serviceHelper.log(
       'info',
-      `Reset schedules will run on ${dateFormat(date, 'dd-mm-yyyy @ HH:MM')}`,
+      `Schedule will run on ${dateformat(date, 'dd-mm-yyyy @ HH:MM')}`,
     );
   } catch (err) {
     serviceHelper.log('error', err.message);
   }
-};
+}
+
+async function setup() {
+  // Cancel any existing schedules
+  serviceHelper.log(
+    'trace',
+    'Removing any existing schedules',
+  );
+  await global.schedules.map((value) => value.cancel());
+
+  // Set schedules each day to keep in sync with sunrise & sunset changes
+  const date = new Date();
+  date.setHours(3);
+  date.setMinutes(5);
+  date.setTime(date.getTime() + 1 * 86400000);
+  const schedule = scheduler.scheduleJob(date, () => {
+    serviceHelper.log('info', 'Resetting daily schedules to keep in sync with sunrise & sunset changes');
+    setup();
+  }); // Set the schedule
+  global.schedules.push(schedule);
+  serviceHelper.log(
+    'info',
+    `Reset schedules will run on ${dateformat(date, 'dd-mm-yyyy @ HH:MM')}`,
+  );
+  await setupSchedules();
+}
+
+exports.setup = setup;
