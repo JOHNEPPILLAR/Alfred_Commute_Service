@@ -3,6 +3,7 @@
  */
 const serviceHelper = require('alfred-helper');
 const scheduler = require('node-schedule');
+const dateformat = require('dateformat');
 
 /**
  * Import helper libraries
@@ -24,10 +25,11 @@ exports.setSchedule = async () => {
   await setupSchedules(); // commute schedules
 
   // Set schedules each day to keep in sync with sunrise & sunset changes
-  const rule = new scheduler.RecurrenceRule();
-  rule.hour = 3;
-  rule.minute = 5;
-  const schedule = scheduler.scheduleJob(rule, () => {
+  const date = new Date();
+  date.setHours(3);
+  date.setMinutes(5);
+  date.setTime(date.getTime() + 1 * 86400000);
+  const schedule = scheduler.scheduleJob(date, () => {
     serviceHelper.log('info', 'Resetting daily schedules to keep in sync with sunrise & sunset changes');
     setupSchedules(); // commute schedules
   }); // Set the schedule
@@ -35,9 +37,6 @@ exports.setSchedule = async () => {
 
   serviceHelper.log(
     'info',
-    `Reset schedules will run at: ${serviceHelper.zeroFill(
-      rule.hour,
-      2,
-    )}:${serviceHelper.zeroFill(rule.minute, 2)}`,
+    `Reset schedules will run on ${dateformat(date, 'dd-mm-yyyy @ HH:MM')}`,
   );
 };

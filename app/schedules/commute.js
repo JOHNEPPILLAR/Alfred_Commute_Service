@@ -132,61 +132,27 @@ async function checkDistruptions() {
     }
     global.commuteDistruptions = false;
   }
-  return true;
 }
 
 /**
  * Check date for bank holiday or weekend
  */
 async function checkForBankHolidayWeekend() {
-  serviceHelper.log('trace', 'Check for bank holidays and weekends');
-  const toDay = new Date();
-  const isWeekend = toDay.getDay() === 6 || toDay.getDay() === 0;
-  const url = 'https://www.gov.uk/bank-holidays.json';
-  let counter = 1;
-
-  if (isWeekend) {
-    serviceHelper.log('trace', "It's the weekend");
+  const isWeekEndBankHoliday = await serviceHelper.checkForBankHolidayWeekend();
+  if (isWeekEndBankHoliday instanceof Error) {
+    serviceHelper.log('trace', isWeekEndBankHoliday.message);
     return;
   }
 
-  const returnData = await serviceHelper.callAPIService(url);
-  if (returnData instanceof Error) {
-    serviceHelper.log('trace', returnData.message);
-    return;
-  }
+  if (isWeekEndBankHoliday) return;
 
-  let bankHolidays = [];
-  try {
-    bankHolidays = returnData['england-and-wales'].events;
-  } catch (err) {
-    serviceHelper.log('error', err.message);
-    return;
-  }
-  if (bankHolidays.length === 0) {
-    serviceHelper.log('trace', 'No bank holiday data');
-    return;
-  }
-
-  bankHolidays = bankHolidays.filter(
-    (a) => a.date === dateFormat(toDay, 'yyyy-mm-dd'),
-  );
-
-  if (bankHolidays.length === 0) {
-    checkDistruptions();
-    serviceHelper.log('trace', "It's a weekday");
-    const repeatTimer = setInterval(() => {
-      serviceHelper.log('trace', `Checked cummute status ${counter} times`);
-      checkDistruptions();
-      counter += 1;
-      if (counter === 10) clearInterval(repeatTimer); // exit after 20 minutes
-    }, 120000); // Repeat every 2 minutes
-  } else {
-    serviceHelper.log(
-      'trace',
-      `It's ${bankHolidays[0].title}, so will not check commute status`,
-    );
-  }
+  let counter = 0;
+  const repeatTimer = setInterval(async () => {
+    serviceHelper.log('trace', `Checked cummute status ${counter} times`);
+    await checkDistruptions();
+    counter += 1;
+    if (counter === 10) clearInterval(repeatTimer); // exit after 20 minutes
+  }, 120000); // Repeat every 2 minutes
 }
 
 /**
@@ -211,20 +177,15 @@ exports.setup = async () => {
       serviceHelper.log('trace', 'No commute schedules are active');
     } // Exit function as no data to process
 
-    serviceHelper.log('trace', 'Create commute check timer');
-    const rule = new scheduler.RecurrenceRule();
-    rule.hour = results.rows[0].hour || '07';
-    rule.minute = results.rows[0].minute || '10';
-
-    // Set the schedule
-    const schedule = scheduler.scheduleJob(rule, () => checkForBankHolidayWeekend());
+    serviceHelper.log('trace', 'Create commute check schedule');
+    const date = new Date();
+    date.setHours(results.rows[0].hour || '07');
+    date.setMinutes(results.rows[0].minute || '10');
+    const schedule = scheduler.scheduleJob(date, () => checkForBankHolidayWeekend());
     global.schedules.push(schedule);
     serviceHelper.log(
       'info',
-      `Commute check schedule will run at: ${serviceHelper.zeroFill(
-        rule.hour,
-        2,
-      )}:${serviceHelper.zeroFill(rule.minute, 2)}`,
+      `Reset schedules will run on ${dateFormat(date, 'dd-mm-yyyy @ HH:MM')}`,
     );
   } catch (err) {
     serviceHelper.log('error', err.message);
