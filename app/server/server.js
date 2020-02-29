@@ -18,8 +18,8 @@ const APIcommute = require('../api/travel/commute.js');
 
 global.APITraceID = '';
 global.schedules = [];
-let ClientAccessKey;
 
+let ClientAccessKey;
 
 async function setupAndRun() {
   // Restify server Init
