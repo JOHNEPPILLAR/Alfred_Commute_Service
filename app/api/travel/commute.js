@@ -130,7 +130,7 @@ async function getCommute(req, res, next) {
 
   let apiData;
   let atHome = true;
-  const atJPWork = false;
+  let atJPWork = false;
   const busLeg = {};
   const walkLeg = {};
   const walkToUndergroundLeg = {};
@@ -151,7 +151,7 @@ async function getCommute(req, res, next) {
 
   serviceHelper.log('trace', 'Find out if caller is at home location');
   try {
-    atHome = serviceHelper.inHomeGeoFence(lat, long);
+    atHome = await serviceHelper.inHomeGeoFence(lat, long);
   } catch (err) {
     serviceHelper.log('error', err.message);
 
@@ -305,6 +305,23 @@ async function getCommute(req, res, next) {
 
       journeys.push({ legs });
     }
+  }
+
+  serviceHelper.log('trace', 'Find out if caller is at work location');
+  try {
+    atJPWork = await serviceHelper.inJPWorkGeoFence(lat, long);
+  } catch (err) {
+    serviceHelper.log('error', err.message);
+
+    if (typeof res !== 'undefined' && res !== null) {
+      returnCommuteError(
+        'Unable to calculate commute due to starting location',
+        req,
+        res,
+        next,
+      );
+    }
+    return false;
   }
 
   if (atJPWork) {
