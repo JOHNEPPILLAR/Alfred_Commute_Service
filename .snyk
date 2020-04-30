@@ -7,24 +7,36 @@ patch:
     - restify > lodash:
         patched: '2020-04-30T18:55:49.856Z'
       request-promise > request-promise-core > lodash:
-        patched: '2020-04-30T19:10:57.405Z'
+        patched: '2020-04-30T19:15:14.956Z'
     - request-promise > request-promise-core > lodash:
         patched: '2020-04-30T18:55:49.856Z'
       restify > restify-errors > lodash:
-        patched: '2020-04-30T19:10:57.405Z'
+        patched: '2020-04-30T19:15:14.956Z'
     - restify > restify-errors > lodash:
         patched: '2020-04-30T18:55:49.856Z'
       alfred-helper > request-promise > request-promise-core > lodash:
-        patched: '2020-04-30T19:10:57.405Z'
+        patched: '2020-04-30T19:15:14.956Z'
     - alfred_helper_lib > request-promise > request-promise-core > lodash:
         patched: '2020-04-30T18:55:49.856Z'
       restify > restify-errors > @netflix/nerror > lodash:
-        patched: '2020-04-30T19:10:57.405Z'
+        patched: '2020-04-30T19:15:14.956Z'
     - restify > restify-errors > @netflix/nerror > lodash:
         patched: '2020-04-30T18:55:49.856Z'
       alfred-helper > node-vault > request-promise-native > request-promise-core > lodash:
-        patched: '2020-04-30T19:10:57.405Z'
+        patched: '2020-04-30T19:15:14.956Z'
     - alfred_helper_lib > node-vault > request-promise-native > request-promise-core > lodash:
         patched: '2020-04-30T18:55:49.856Z'
       restify > lodash:
+        patched: '2020-04-30T19:15:14.956Z'
+    - request-promise > request-promise-core > lodash:
+        patched: '2020-04-30T19:10:57.405Z'
+    - restify > restify-errors > lodash:
+        patched: '2020-04-30T19:10:57.405Z'
+    - alfred-helper > request-promise > request-promise-core > lodash:
+        patched: '2020-04-30T19:10:57.405Z'
+    - restify > restify-errors > @netflix/nerror > lodash:
+        patched: '2020-04-30T19:10:57.405Z'
+    - alfred-helper > node-vault > request-promise-native > request-promise-core > lodash:
+        patched: '2020-04-30T19:10:57.405Z'
+    - restify > lodash:
         patched: '2020-04-30T19:10:57.405Z'
