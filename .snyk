@@ -1,33 +1,38 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
 version: v1.13.5
-ignore: {}
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-JS-LODASH-567746:
+    - restify > lodash:
+        reason: no patch
+        expires: '2020-05-30T19:21:51.512Z'
+    - request-promise > request-promise-core > lodash:
+        reason: no patch
+        expires: '2020-05-30T19:21:51.512Z'
+    - restify > restify-errors > lodash:
+        reason: no patch
+        expires: '2020-05-30T19:21:51.513Z'
+    - node-vault > request-promise-native > request-promise-core > lodash:
+        reason: no patch
+        expires: '2020-05-30T19:21:51.513Z'
+    - restify > restify-errors > @netflix/nerror > lodash:
+        reason: no patch
+        expires: '2020-05-30T19:21:51.513Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   SNYK-JS-LODASH-567746:
     - restify > lodash:
         patched: '2020-04-30T18:55:49.856Z'
-      request-promise > request-promise-core > lodash:
-        patched: '2020-04-30T19:15:14.956Z'
     - request-promise > request-promise-core > lodash:
         patched: '2020-04-30T18:55:49.856Z'
-      restify > restify-errors > lodash:
-        patched: '2020-04-30T19:15:14.956Z'
     - restify > restify-errors > lodash:
         patched: '2020-04-30T18:55:49.856Z'
-      alfred-helper > request-promise > request-promise-core > lodash:
-        patched: '2020-04-30T19:15:14.956Z'
     - alfred_helper_lib > request-promise > request-promise-core > lodash:
         patched: '2020-04-30T18:55:49.856Z'
-      restify > restify-errors > @netflix/nerror > lodash:
-        patched: '2020-04-30T19:15:14.956Z'
     - restify > restify-errors > @netflix/nerror > lodash:
         patched: '2020-04-30T18:55:49.856Z'
-      alfred-helper > node-vault > request-promise-native > request-promise-core > lodash:
-        patched: '2020-04-30T19:15:14.956Z'
     - alfred_helper_lib > node-vault > request-promise-native > request-promise-core > lodash:
         patched: '2020-04-30T18:55:49.856Z'
-      restify > lodash:
-        patched: '2020-04-30T19:15:14.956Z'
     - request-promise > request-promise-core > lodash:
         patched: '2020-04-30T19:10:57.405Z'
     - restify > restify-errors > lodash:
@@ -40,3 +45,15 @@ patch:
         patched: '2020-04-30T19:10:57.405Z'
     - restify > lodash:
         patched: '2020-04-30T19:10:57.405Z'
+    - request-promise > request-promise-core > lodash:
+        patched: '2020-04-30T19:15:14.956Z'
+    - restify > restify-errors > lodash:
+        patched: '2020-04-30T19:15:14.956Z'
+    - alfred-helper > request-promise > request-promise-core > lodash:
+        patched: '2020-04-30T19:15:14.956Z'
+    - restify > restify-errors > @netflix/nerror > lodash:
+        patched: '2020-04-30T19:15:14.956Z'
+    - alfred-helper > node-vault > request-promise-native > request-promise-core > lodash:
+        patched: '2020-04-30T19:15:14.956Z'
+    - restify > lodash:
+        patched: '2020-04-30T19:15:14.956Z'
