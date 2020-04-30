@@ -1,0 +1,16 @@
+{
+  "title": "commute schedule",
+  "description": "describes properties required to check commute schedule",
+  "type": "object",
+  "properties": {
+    "lat": {
+      "type": "string",
+      "description": "Lat"
+    },
+    "long": {
+      "type": "string",
+      "description": "Long"
+    }
+  },
+  "required": ["lat", "long"]
+}
