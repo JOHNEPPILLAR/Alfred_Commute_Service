@@ -1,5 +1,5 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.15.0
+version: v1.16.0
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
   SNYK-JS-LODASH-567746:
@@ -73,3 +73,13 @@ patch:
         patched: '2020-06-16T17:44:29.421Z'
     - alfred_helper_lib > restify > restify-errors > @netflix/nerror > lodash:
         patched: '2020-06-16T17:44:29.421Z'
+    - alfred_base_service > restify > lodash:
+        patched: '2020-06-27T15:29:38.932Z'
+    - alfred_base_service > request-promise > request-promise-core > lodash:
+        patched: '2020-06-27T15:29:38.932Z'
+    - alfred_base_service > restify > restify-errors > lodash:
+        patched: '2020-06-27T15:29:38.932Z'
+    - alfred_base_service > node-vault > request-promise-native > request-promise-core > lodash:
+        patched: '2020-06-27T15:29:38.932Z'
+    - alfred_base_service > restify > restify-errors > @netflix/nerror > lodash:
+        patched: '2020-06-27T15:29:38.932Z'
