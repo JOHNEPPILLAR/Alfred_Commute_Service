@@ -18,7 +18,7 @@
     "alfred-helper": "git://github.com/johneppillar/alfred_helper",
     "dateformat": "^3.0.3",
     "dotenv": "^8.2.0",
-    "snyk": "^1.361.3"
+    "snyk": "^1.362.1"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
@@ -30,7 +30,7 @@
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.20.3",
-    "eslint-plugin-react-hooks": "^4.0.7",
+    "eslint-plugin-react-hooks": "^4.0.8",
     "prettier": "^2.0.5"
   }
 }
