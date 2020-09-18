@@ -1,0 +1,9 @@
+[
+  {
+    "schedule": 1,
+    "hour": 7,
+    "minute": 15,
+    "active": true,
+    "override": true
+  }
+]
